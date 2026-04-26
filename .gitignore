@@ -1,0 +1,46 @@
+# Xcode
+*.xcuserstate
+*.xcworkspace/xcuserdata
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*.xcscmblueprint
+DerivedData/
+*.xcbkptlist
+IDEWorkspaceChecks.plist
+
+# .DS_Store
+.DS_Store
+**/.DS_Store
+
+# Build artifacts
+build/
+build.log
+*.ipa
+*.app
+
+# CocoaPods
+Pods/
+
+# Swift Package Manager
+.swiftpm/
+
+# Misc / Python scripts
+*.pem
+*.swp
+*~
+__pycache__/
+*.pyc
+generate_pbxproj.py
+
+# Editor / Agent
+.claude/
+.trae/
+.agent_trash/
+.vscode/
+
+# Non-source docs
+context.md
+ref-widget-settings.txt
+widget-settings.txt
+
+# Secrets
+*.entitlements

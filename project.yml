@@ -1,0 +1,89 @@
+name: MemoApp
+options:
+  bundleIdPrefix: com.memo
+  deploymentTarget:
+    iOS: "17.0"
+    watchOS: "10.0"
+settings:
+  DEVELOPMENT_TEAM: TQB9352FVA
+  CODE_SIGN_STYLE: Automatic
+packages:
+  SwiftUIMath:
+    url: https://github.com/gonzalezreal/swiftui-math
+    from: 0.1.0
+targets:
+  MemoiPhone:
+    type: application
+    platform: iOS
+    sources:
+      - iPhone
+      - Shared
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.memo.iphone
+      INFOPLIST_FILE: iPhone/Info.plist
+      CODE_SIGN_ENTITLEMENTS: iPhone/MemoiPhone.entitlements
+      CURRENT_PROJECT_VERSION: 1
+      MARKETING_VERSION: "1.0"
+      DEVELOPMENT_TEAM: TQB9352FVA
+    dependencies:
+      - target: MemoWatch
+        embed: true
+      - package: SwiftUIMath
+    postCompileScripts:
+      - name: Clean Extended Attributes
+        script: |
+          xattr -cr "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app" 2>/dev/null || true
+
+  MemoWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - Watch
+      - Shared
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.memo.iphone.watchkitapp.v2
+      INFOPLIST_FILE: Watch/Info.plist
+      CODE_SIGN_ENTITLEMENTS: Watch/MemoWatch.entitlements
+      CURRENT_PROJECT_VERSION: 1
+      MARKETING_VERSION: "1.0"
+      DEVELOPMENT_TEAM: TQB9352FVA
+      SKIP_INSTALL: YES
+      ONLY_ACTIVE_ARCH: YES
+    dependencies:
+      - target: MemoWatchWidgets
+        embed: true
+      - package: SwiftUIMath
+    postCompileScripts:
+      - name: Clean Extended Attributes
+        script: |
+          xattr -cr "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app" 2>/dev/null || true
+
+  MemoWatchWidgets:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - WatchWidgets
+      - Shared/Models
+      - Shared/Storage
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.memo.iphone.watchkitapp.v2.widgets
+      INFOPLIST_FILE: WatchWidgets/Info.plist
+      CODE_SIGN_ENTITLEMENTS: WatchWidgets/MemoWatchWidgets.entitlements
+      CURRENT_PROJECT_VERSION: 1
+      MARKETING_VERSION: "1.0"
+      DEVELOPMENT_TEAM: TQB9352FVA
+      SKIP_INSTALL: YES
+      PRODUCT_NAME: MemoWatchWidgets
+      LD_RUNPATH_SEARCH_PATHS:
+        - "$(inherited)"
+        - "@executable_path/Frameworks"
+        - "@executable_path/../../Frameworks"
+      APPLICATION_EXTENSION_API_ONLY: YES
+      SDKROOT: watchos
+      TARGETED_DEVICE_FAMILY: 4
+      WK_APP_BUNDLE_IDENTIFIER: com.memo.iphone.watchkitapp.v2
+      ASSETCATALOG_COMPILER_COMPLICATION_NAME: Complication
+    postCompileScripts:
+      - name: Clean Extended Attributes
+        script: |
+          xattr -cr "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.appex" 2>/dev/null || true
