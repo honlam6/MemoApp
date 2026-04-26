@@ -88,7 +88,6 @@ private struct WatchCrownMathView: View {
     @State private var contentWidth: CGFloat = 0
     @State private var viewportWidth: CGFloat = 0
     @GestureState private var dragOffset: CGFloat = 0
-    @State private var isHorizontalDrag = false
 
     private var needsDrag: Bool {
         contentWidth > viewportWidth && viewportWidth > 0
@@ -103,52 +102,64 @@ private struct WatchCrownMathView: View {
     }
 
     var body: some View {
-        Math(formula)
-            .mathTypesettingStyle(.display)
-            .mathFont(Math.Font(name: .latinModern, size: fontSize))
-            .fixedSize(horizontal: true, vertical: true)
-            .background(contentWidthReader)
-            .offset(x: needsDrag ? visibleOffset : 0)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(viewportWidthReader)
-            .clipped()
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 10)
-                    .onChanged { value in
-                        if abs(value.translation.width) > abs(value.translation.height) * 1.5 {
-                            isHorizontalDrag = true
-                        }
-                    }
-                    .updating($dragOffset) { value, state, _ in
-                        guard isHorizontalDrag else { return }
-                        state = value.translation.width
-                    }
-                    .onEnded { value in
-                        if isHorizontalDrag {
-                            settledOffset = HorizontalDragBounds.clampedOffset(
-                                proposed: settledOffset + value.translation.width,
-                                contentWidth: contentWidth,
-                                viewportWidth: viewportWidth
-                            )
-                        }
-                        isHorizontalDrag = false
-                    }
-            )
-            .onPreferenceChange(MathContentWidthPreferenceKey.self) { width in
-                contentWidth = width
-                settledOffset = HorizontalDragBounds.clampedOffset(
-                    proposed: settledOffset,
-                    contentWidth: width,
-                    viewportWidth: viewportWidth
-                )
+        Group {
+            if needsDrag {
+                Math(formula)
+                    .mathTypesettingStyle(.display)
+                    .mathFont(Math.Font(name: .latinModern, size: fontSize))
+                    .fixedSize(horizontal: true, vertical: true)
+                    .background(contentWidthReader)
+                    .offset(x: visibleOffset)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(viewportWidthReader)
+                    .clipped()
+                    .gesture(formulaDragGesture)
+            } else {
+                Math(formula)
+                    .mathTypesettingStyle(.display)
+                    .mathFont(Math.Font(name: .latinModern, size: fontSize))
+                    .fixedSize(horizontal: true, vertical: true)
+                    .background(contentWidthReader)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(viewportWidthReader)
+                    .clipped()
             }
-            .onPreferenceChange(MathViewportWidthPreferenceKey.self) { width in
-                viewportWidth = width
-                settledOffset = HorizontalDragBounds.clampedOffset(
-                    proposed: settledOffset,
-                    contentWidth: contentWidth,
-                    viewportWidth: width
-                )
+        }
+        .onPreferenceChange(MathContentWidthPreferenceKey.self) { width in
+            contentWidth = width
+            settledOffset = HorizontalDragBounds.clampedOffset(
+                proposed: settledOffset,
+                contentWidth: width,
+                viewportWidth: viewportWidth
+            )
+        }
+        .onPreferenceChange(MathViewportWidthPreferenceKey.self) { width in
+            viewportWidth = width
+            settledOffset = HorizontalDragBounds.clampedOffset(
+                proposed: settledOffset,
+                contentWidth: contentWidth,
+                viewportWidth: width
+            )
+        }
+    }
+
+    private var formulaDragGesture: some Gesture {
+        DragGesture(minimumDistance: 15)
+            .updating($dragOffset) { value, state, _ in
+                if abs(value.translation.width) > abs(value.translation.height) * 2.0
+                   || (abs(value.translation.width) > 5 && state != 0) {
+                    state = value.translation.width
+                }
+            }
+            .onEnded { value in
+                let isHorizontal = abs(value.translation.width) > abs(value.translation.height) * 2.0
+                if isHorizontal {
+                    settledOffset = HorizontalDragBounds.clampedOffset(
+                        proposed: settledOffset + value.translation.width,
+                        contentWidth: contentWidth,
+                        viewportWidth: viewportWidth
+                    )
+                }
             }
     }
 

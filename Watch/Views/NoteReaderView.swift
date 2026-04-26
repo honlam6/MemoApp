@@ -5,7 +5,6 @@ struct NoteReaderView: View {
     @State private var blocks: [MarkdownParser.Block] = []
     @State private var fontSize: CGFloat = NoteReaderView.initialFontSize
     @State private var prefetchedBlockCount = 0
-    @FocusState private var isScrollFocused: Bool
 
     private let initialPrefetchCount = 10
     private let prefetchBatchSize = 8
@@ -43,8 +42,6 @@ struct NoteReaderView: View {
             .padding(.vertical, 4)
             .clipped()
         }
-        .focusable()
-        .focused($isScrollFocused)
         .navigationTitle(note.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -59,20 +56,12 @@ struct NoteReaderView: View {
         }
         .onAppear {
             refreshBlocks()
-            isScrollFocused = true
         }
         .onChange(of: note.id) { _, _ in
             refreshBlocks()
         }
         .onChange(of: fontSize) { _, _ in
             refreshBlocks()
-        }
-        .onChange(of: isScrollFocused) { _, focused in
-            if !focused {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    isScrollFocused = true
-                }
-            }
         }
     }
 
