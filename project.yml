@@ -28,11 +28,37 @@ targets:
     dependencies:
       - target: MemoWatch
         embed: true
+      - target: MemoShareExtension
+        embed: true
       - package: SwiftUIMath
     postCompileScripts:
       - name: Clean Extended Attributes
         script: |
           xattr -cr "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app" 2>/dev/null || true
+
+  MemoShareExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - ShareExtension
+      - path: Shared/Models
+        group: Shared
+      - path: Shared/Storage
+        group: Shared
+      - path: Shared/Import
+        group: Shared
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.memo.iphone.share
+      INFOPLIST_FILE: ShareExtension/Info.plist
+      CODE_SIGN_ENTITLEMENTS: ShareExtension/MemoShareExtension.entitlements
+      CURRENT_PROJECT_VERSION: 1
+      MARKETING_VERSION: "1.0"
+      DEVELOPMENT_TEAM: TQB9352FVA
+      APPLICATION_EXTENSION_API_ONLY: YES
+    postCompileScripts:
+      - name: Clean Extended Attributes
+        script: |
+          xattr -cr "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.appex" 2>/dev/null || true
 
   MemoWatch:
     type: application
@@ -87,3 +113,21 @@ targets:
       - name: Clean Extended Attributes
         script: |
           xattr -cr "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.appex" 2>/dev/null || true
+
+schemes:
+  MemoiPhone:
+    build:
+      targets:
+        MemoiPhone: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+  MemoWatch:
+    build:
+      targets:
+        MemoWatch: all
+    run:
+      config: Debug
+    archive:
+      config: Release

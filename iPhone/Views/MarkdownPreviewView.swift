@@ -15,10 +15,14 @@ struct MarkdownPreviewView: View {
             .padding()
         }
         .onAppear {
-            blocks = MarkdownParser.parse(content)
+            Task {
+                blocks = await MarkdownParser.parseBackground(content)
+            }
         }
         .onChange(of: content) { _, newValue in
-            blocks = MarkdownParser.parse(newValue)
+            Task {
+                blocks = await MarkdownParser.parseBackground(newValue)
+            }
         }
     }
 }

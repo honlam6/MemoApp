@@ -29,15 +29,18 @@ class NoteStore: ObservableObject {
             queue: .main
         ) { [weak self] _ in
             guard let self = self else { return }
+            notes = NoteStorage.loadNotes()
             print("[Sync][iPhone] didBecomeActive: 主动同步 \(self.notes.count) 条笔记到 Watch")
             WatchSyncManager.shared.sendNotes(self.notes)
         }
     }
 
     func addNote(from content: String) {
-        let title = Note.titleFromContent(content)
-        let note = Note(title: title, content: content)
-        notes.insert(note, at: 0)
+        do {
+            notes = try NoteImportService.importMarkdown(content, into: notes)
+        } catch {
+            print("[Import][iPhone] Failed to import note: \(error)")
+        }
     }
 
     func deleteNote(_ note: Note) {
@@ -50,6 +53,11 @@ class NoteStore: ObservableObject {
             notes[idx].title = Note.titleFromContent(content)
             notes[idx].lastModified = Date()
         }
+    }
+
+    func handleOpenURL(_ url: URL) {
+        guard url.scheme == "memoapp", url.host == "sync" else { return }
+        notes = NoteStorage.loadNotes()
     }
 
     private func scheduleSync() {

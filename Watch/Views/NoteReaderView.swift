@@ -29,7 +29,7 @@ struct NoteReaderView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 3) {
                 ForEach(Array(blocks.enumerated()), id: \.offset) { index, block in
                     DeferredWatchBlockView(
                         block: block,
@@ -40,8 +40,9 @@ struct NoteReaderView: View {
             }
             .padding(.horizontal, 4)
             .padding(.vertical, 4)
-            .clipped()
         }
+        .ignoresSafeArea(edges: .bottom)
+        .id(note.id)
         .navigationTitle(note.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -66,9 +67,12 @@ struct NoteReaderView: View {
     }
 
     private func refreshBlocks() {
-        blocks = MarkdownParser.parse(note.content)
-        prefetchedBlockCount = min(initialPrefetchCount, blocks.count)
-        startPrefetchingRemainingBlocks(expectedCount: blocks.count)
+        Task {
+            let parsed = await MarkdownParser.parseBackground(note.content)
+            blocks = parsed
+            prefetchedBlockCount = min(initialPrefetchCount, blocks.count)
+            startPrefetchingRemainingBlocks(expectedCount: blocks.count)
+        }
     }
 
     private func cycleFontSize() {
@@ -108,37 +112,34 @@ struct DeferredWatchBlockView: View {
     @State private var isVisible = false
 
     var body: some View {
-        Group {
+        switch block {
+        case .mathBlock, .table:
             if isVisible || isPrefetched {
-                WatchBlockView(
-                    block: block,
-                    fontSize: fontSize
-                )
+                WatchBlockView(block: block, fontSize: fontSize)
             } else {
-                placeholder
+                expensivePlaceholder
+                    .onAppear { isVisible = true }
             }
-        }
-        .onAppear {
-            isVisible = true
+        default:
+            WatchBlockView(block: block, fontSize: fontSize)
         }
     }
 
     @ViewBuilder
-    private var placeholder: some View {
+    private var expensivePlaceholder: some View {
         switch block {
         case .mathBlock:
             RoundedRectangle(cornerRadius: 4)
-                .fill(.gray.opacity(0.12))
+                .fill(.secondary.opacity(0.1))
                 .frame(height: 26)
                 .padding(.vertical, 2)
         case .table:
             RoundedRectangle(cornerRadius: 4)
-                .fill(.gray.opacity(0.08))
+                .fill(.secondary.opacity(0.08))
                 .frame(height: 44)
                 .padding(.vertical, 2)
         default:
-            Color.clear
-                .frame(height: max(fontSize + 6, 18))
+            EmptyView()
         }
     }
 }

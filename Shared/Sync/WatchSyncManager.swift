@@ -112,9 +112,6 @@ class WatchSyncManager: NSObject {
             }
             #endif
 
-            try session.updateApplicationContext(dict)
-            log("sendNotes: updateApplicationContext 已更新")
-
             session.transferUserInfo(dict)
             log("sendNotes: transferUserInfo 已发送")
 

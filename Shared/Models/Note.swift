@@ -15,14 +15,69 @@ struct Note: Codable, Identifiable, Equatable {
 
     /// 从 markdown 内容自动提取标题（第一个 # 行，或前20字符）
     static func titleFromContent(_ content: String) -> String {
-        for line in content.components(separatedBy: .newlines) {
+        let lines = content.components(separatedBy: .newlines)
+        for line in lines {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             if trimmed.hasPrefix("# ") {
                 return String(trimmed.dropFirst(2)).trimmingCharacters(in: .whitespaces)
             }
         }
-        // fallback: 前30字符
-        let prefix = String(content.prefix(30))
-        return prefix.components(separatedBy: .newlines).first ?? "无标题"
+
+        if let fallback = firstReadableFallbackTitleLine(in: lines) {
+            return String(fallback.prefix(30))
+        }
+
+        return "公式笔记"
+    }
+
+    private static func firstReadableFallbackTitleLine(in lines: [String]) -> String? {
+        var insideDollarMath = false
+        var insideBracketMath = false
+
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { continue }
+
+            if insideDollarMath {
+                if trimmed.contains("$$") {
+                    insideDollarMath = false
+                }
+                continue
+            }
+
+            if insideBracketMath {
+                if trimmed.contains(#"\]"#) || trimmed.contains(#"\\]"#) {
+                    insideBracketMath = false
+                }
+                continue
+            }
+
+            if trimmed.hasPrefix("$$") {
+                if !String(trimmed.dropFirst(2)).contains("$$") {
+                    insideDollarMath = true
+                }
+                continue
+            }
+
+            if trimmed.hasPrefix(#"\["#) || trimmed.hasPrefix(#"\\["#) {
+                if !trimmed.contains(#"\]"#) && !trimmed.contains(#"\\]"#) {
+                    insideBracketMath = true
+                }
+                continue
+            }
+
+            if isStandaloneInlineMath(trimmed) {
+                continue
+            }
+
+            return trimmed
+        }
+
+        return nil
+    }
+
+    private static func isStandaloneInlineMath(_ line: String) -> Bool {
+        (line.hasPrefix("$") && line.hasSuffix("$") && !line.hasPrefix("$$") && line.count > 2) ||
+        (line.hasPrefix(#"\("#) && line.hasSuffix(#"\)"#) && line.count > 4)
     }
 }

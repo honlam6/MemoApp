@@ -7,25 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00EC0204D41715A2ED913DBA /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187CFB3CE1E7250B3106F97B /* Note.swift */; };
 		026511814006AB6A8937FE4D /* MarkdownPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537762A9D5E39BFEFB5CA533 /* MarkdownPreviewView.swift */; };
 		03E96ADFC590EA955F84E285 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEE81688F7EC5B35CB3352AA /* ContentView.swift */; };
 		045C623870C646DF994CF38D /* SwiftUIMath in Frameworks */ = {isa = PBXBuildFile; productRef = FB15073ECA1CCC6C564CCD67 /* SwiftUIMath */; };
 		068F1BE4AF50099D12996F33 /* MemoWatchWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 479A1098696A3E223E8CB33F /* MemoWatchWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1B219AFB7E5FC60B5B41A651 /* MemoApp_Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = A607301858B39B87818B0253 /* MemoApp_Watch.swift */; };
 		1F3E097A43BE07BFF66A694E /* VelocityScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E06A6B0AE5BF3559C8D60A /* VelocityScrollView.swift */; };
+		26D2447DCE1963EB2CD381A9 /* NoteImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C3AB17E5EE214FE676BB03 /* NoteImportService.swift */; };
 		29463BAFA6FC903D8DB00ACC /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187CFB3CE1E7250B3106F97B /* Note.swift */; };
 		2C1F2597E83F510DD28D6745 /* NoteStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7BFCDADEAD1EC7CFAD77378 /* NoteStorage.swift */; };
 		2F8993E6F5CC1DD82DE93FBC /* MarkdownParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CD7197B4C5A0A06AD94614 /* MarkdownParser.swift */; };
 		3E2F5EA5F77F27A9BA0E56F9 /* LaTeXRenderViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7022D4681AF28AFB894E98E /* LaTeXRenderViews.swift */; };
 		4BC225CFFF03606CE3AB5C00 /* MemoWatchWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44ADD7B149E6BFCEFAE65B77 /* MemoWatchWidgets.swift */; };
 		51EA62F6AE2689C28A0D327D /* NoteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D723B1CBA9A615404116F25 /* NoteListView.swift */; };
+		55D3811AE4F27EE69369FAB5 /* MemoShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C550571CD63595A2F6E5A736 /* MemoShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5707D2AA4718E7A354207CD9 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F9BEB3C96EC169240AAC08 /* NoteEditorView.swift */; };
 		5A4F2AA900F47A4FCAAC8905 /* NoteStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7BFCDADEAD1EC7CFAD77378 /* NoteStorage.swift */; };
 		603DB521885A742A861371F5 /* HorizontalDragBounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8040F6A91C0723ED581AF28 /* HorizontalDragBounds.swift */; };
 		66D366B6EEE800A4958BC200 /* HorizontalDragBounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8040F6A91C0723ED581AF28 /* HorizontalDragBounds.swift */; };
 		76C9C119E2899AFB4EEF198E /* MarkdownInlineParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C8D0AF5F7AB810B084A3BB6 /* MarkdownInlineParser.swift */; };
+		77508C56A60352006C2813CC /* NoteImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C3AB17E5EE214FE676BB03 /* NoteImportService.swift */; };
 		81BF8F2079D2223C1095CEF8 /* NoteReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E072D72B429AE181F3583E /* NoteReaderView.swift */; };
 		8796A7AEE5ED8F607BCABB72 /* WatchSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7BB3EF1B48BE45512EBACD /* WatchSyncManager.swift */; };
+		87D067FB888A498B7F922300 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4EF13B27199966545261DAA /* ShareViewController.swift */; };
 		94876F0F68116BF6234B0F66 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E406B4711C5BC5C821F43CD9 /* Assets.xcassets */; };
 		96227A15475CA3C28D9C20AE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70EFF391F3D1B858EF12EEFF /* ContentView.swift */; };
 		99A444861295F46355E6845B /* LaTeXRenderViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7022D4681AF28AFB894E98E /* LaTeXRenderViews.swift */; };
@@ -34,11 +39,14 @@
 		AF257881F14BC47C11081960 /* MemoWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 8C781B1B32D9F4110FC889B0 /* MemoWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B38639BE34A0130AACDBC5F2 /* MarkdownTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F94E2585532F208ECCA18A /* MarkdownTextView.swift */; };
 		B567A95607C60BA41FBB9F5C /* NoteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EC284179CB10AE7E7A09CBC /* NoteListView.swift */; };
+		B7E5CE3B750D9387755CF7E3 /* NoteStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7BFCDADEAD1EC7CFAD77378 /* NoteStorage.swift */; };
 		C63E7030C7272BF79A9A601D /* WatchSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7BB3EF1B48BE45512EBACD /* WatchSyncManager.swift */; };
 		CDA7FBB0361CA06BA2467ECD /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187CFB3CE1E7250B3106F97B /* Note.swift */; };
 		DA59A3206F72C43A9E71C4BC /* SwiftUIMath in Frameworks */ = {isa = PBXBuildFile; productRef = 4FBB49087259781C6602CC99 /* SwiftUIMath */; };
+		DB0EBC7AF5ACCD9E2DCB6045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 15E3CFFBC5D39266D7AFF56D /* Assets.xcassets */; };
 		E6A7E4CFADBEECC10319EB59 /* FileImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6188C2C1D9154F450B23813 /* FileImportView.swift */; };
 		E6E1FC23DF1C1109BEA839F9 /* MemoApp_iPhone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389193572E24A0E732F67724 /* MemoApp_iPhone.swift */; };
+		F18C39CEB99015EC8E89331B /* NoteImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C3AB17E5EE214FE676BB03 /* NoteImportService.swift */; };
 		F3D688D5C750DFF6D1EA08E8 /* MarkdownInlineParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C8D0AF5F7AB810B084A3BB6 /* MarkdownInlineParser.swift */; };
 		F6EA11BEFD689A8934472BA1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 787E6B935958916E3164D01C /* Assets.xcassets */; };
 		FE261793ECF369BE576B7E17 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187CFB3CE1E7250B3106F97B /* Note.swift */; };
@@ -46,6 +54,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		CB7B3FB4165DBDFF637AA5D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 45F3CD180B324C2238EA3FF9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 933AA896A26A6B348E656FA1;
+			remoteInfo = MemoShareExtension;
+		};
 		D7C9679049C3D9D16264243D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 45F3CD180B324C2238EA3FF9 /* Project object */;
@@ -74,6 +89,17 @@
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C13762962B0A86D4CAD201C9 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				55D3811AE4F27EE69369FAB5 /* MemoShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E2567147EE3C2C9DA3C16EA3 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -90,10 +116,13 @@
 /* Begin PBXFileReference section */
 		08E06A6B0AE5BF3559C8D60A /* VelocityScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VelocityScrollView.swift; sourceTree = "<group>"; };
 		0E9CEB859D83D872CE4750B6 /* CompactTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactTableView.swift; sourceTree = "<group>"; };
+		15E3CFFBC5D39266D7AFF56D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		187CFB3CE1E7250B3106F97B /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		26E072D72B429AE181F3583E /* NoteReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteReaderView.swift; sourceTree = "<group>"; };
+		28C3AB17E5EE214FE676BB03 /* NoteImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteImportService.swift; sourceTree = "<group>"; };
 		29B7F4B038C8AB49274E90E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		389193572E24A0E732F67724 /* MemoApp_iPhone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoApp_iPhone.swift; sourceTree = "<group>"; };
+		3D9C08B5D13AAD003B57423F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4337A04FDFD39715C0AE39DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		44ADD7B149E6BFCEFAE65B77 /* MemoWatchWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoWatchWidgets.swift; sourceTree = "<group>"; };
 		479A1098696A3E223E8CB33F /* MemoWatchWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MemoWatchWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -105,6 +134,7 @@
 		695CD233A959C0CFDD3141F0 /* MemoWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MemoWatch.entitlements; sourceTree = "<group>"; };
 		6EC284179CB10AE7E7A09CBC /* NoteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteListView.swift; sourceTree = "<group>"; };
 		70EFF391F3D1B858EF12EEFF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		75113A81E267081978D65975 /* MemoShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MemoShareExtension.entitlements; sourceTree = "<group>"; };
 		787E6B935958916E3164D01C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7C7BB3EF1B48BE45512EBACD /* WatchSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSyncManager.swift; sourceTree = "<group>"; };
 		7C8D0AF5F7AB810B084A3BB6 /* MarkdownInlineParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownInlineParser.swift; sourceTree = "<group>"; };
@@ -113,6 +143,8 @@
 		A0F94E2585532F208ECCA18A /* MarkdownTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTextView.swift; sourceTree = "<group>"; };
 		A607301858B39B87818B0253 /* MemoApp_Watch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoApp_Watch.swift; sourceTree = "<group>"; };
 		B2CD7197B4C5A0A06AD94614 /* MarkdownParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownParser.swift; sourceTree = "<group>"; };
+		B4EF13B27199966545261DAA /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		C550571CD63595A2F6E5A736 /* MemoShareExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = MemoShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6188C2C1D9154F450B23813 /* FileImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileImportView.swift; sourceTree = "<group>"; };
 		C7BFCDADEAD1EC7CFAD77378 /* NoteStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStorage.swift; sourceTree = "<group>"; };
 		C8040F6A91C0723ED581AF28 /* HorizontalDragBounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalDragBounds.swift; sourceTree = "<group>"; };
@@ -142,6 +174,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B8FD1FC651E559650838501 /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				3D9C08B5D13AAD003B57423F /* Info.plist */,
+				75113A81E267081978D65975 /* MemoShareExtension.entitlements */,
+				B4EF13B27199966545261DAA /* ShareViewController.swift */,
+			);
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
 		1DD8C0F602BA01CDB045D6D7 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -169,11 +211,21 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		3B1FB5328F978DA53C5690B4 /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				28C3AB17E5EE214FE676BB03 /* NoteImportService.swift */,
+			);
+			name = Import;
+			path = Import;
+			sourceTree = "<group>";
+		};
 		41E1B9F8AFF3F302ABF95105 = {
 			isa = PBXGroup;
 			children = (
 				C3CB8099D62173C57E7B98DA /* iPhone */,
 				D32366D861EFA59DEDDECF30 /* Shared */,
+				0B8FD1FC651E559650838501 /* ShareExtension */,
 				FBB106872286D44AFEDCBB57 /* Watch */,
 				D8B3EF4DC5FF495D73F8345B /* WatchWidgets */,
 				B7883C8AABE3D405BFF98BAB /* Products */,
@@ -185,6 +237,7 @@
 			children = (
 				C7BFCDADEAD1EC7CFAD77378 /* NoteStorage.swift */,
 			);
+			name = Storage;
 			path = Storage;
 			sourceTree = "<group>";
 		};
@@ -193,6 +246,7 @@
 			children = (
 				187CFB3CE1E7250B3106F97B /* Note.swift */,
 			);
+			name = Models;
 			path = Models;
 			sourceTree = "<group>";
 		};
@@ -210,6 +264,7 @@
 			isa = PBXGroup;
 			children = (
 				EF1B42B1D0AD4CB79CD47B33 /* MemoiPhone.app */,
+				C550571CD63595A2F6E5A736 /* MemoShareExtension.appex */,
 				8C781B1B32D9F4110FC889B0 /* MemoWatch.app */,
 				479A1098696A3E223E8CB33F /* MemoWatchWidgets.appex */,
 			);
@@ -239,6 +294,7 @@
 		D32366D861EFA59DEDDECF30 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				3B1FB5328F978DA53C5690B4 /* Import */,
 				674C97C34EC0F65939AE1234 /* Models */,
 				464DD96C64ED48C4B40432E2 /* Storage */,
 				C1046C75C4792061E8715D03 /* Sync */,
@@ -270,6 +326,7 @@
 		D8B3EF4DC5FF495D73F8345B /* WatchWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				15E3CFFBC5D39266D7AFF56D /* Assets.xcassets */,
 				51432D7D28B8216F27D10D09 /* Info.plist */,
 				8FA3E7356BA97CFE5FD059C4 /* MemoWatchWidgets.entitlements */,
 				44ADD7B149E6BFCEFAE65B77 /* MemoWatchWidgets.swift */,
@@ -311,12 +368,14 @@
 				C800C03398A1CE933A2CCE32 /* Clean Extended Attributes */,
 				AB0FC86CB0AA7B5C7FADB5B9 /* Resources */,
 				08E6C7F9DC3CC1DFE96246B2 /* Frameworks */,
+				C13762962B0A86D4CAD201C9 /* Embed Foundation Extensions */,
 				5CDC04B4F71F95DDD57897C4 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				CD3F2400BFDD3739502C4205 /* PBXTargetDependency */,
+				A3E6E07A3FD1F1FC83F1B244 /* PBXTargetDependency */,
 			);
 			name = MemoiPhone;
 			packageProductDependencies = (
@@ -332,6 +391,7 @@
 			buildPhases = (
 				DD0C50263A65048765136B71 /* Sources */,
 				38A225E0B23169722FD3C126 /* Clean Extended Attributes */,
+				12D4EADFEAC170BA0562B9F5 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -367,6 +427,24 @@
 			productReference = 8C781B1B32D9F4110FC889B0 /* MemoWatch.app */;
 			productType = "com.apple.product-type.application";
 		};
+		933AA896A26A6B348E656FA1 /* MemoShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A91F3DB8B5FBB2DCFC8ACC6D /* Build configuration list for PBXNativeTarget "MemoShareExtension" */;
+			buildPhases = (
+				80FD12475F0F36DB40F0B143 /* Sources */,
+				67811F08ACF10556D3ABA695 /* Clean Extended Attributes */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MemoShareExtension;
+			packageProductDependencies = (
+			);
+			productName = MemoShareExtension;
+			productReference = C550571CD63595A2F6E5A736 /* MemoShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -385,6 +463,10 @@
 						ProvisioningStyle = Automatic;
 					};
 					711DE72963648921AB05D6B5 = {
+						DevelopmentTeam = TQB9352FVA;
+						ProvisioningStyle = Automatic;
+					};
+					933AA896A26A6B348E656FA1 = {
 						DevelopmentTeam = TQB9352FVA;
 						ProvisioningStyle = Automatic;
 					};
@@ -407,6 +489,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				933AA896A26A6B348E656FA1 /* MemoShareExtension */,
 				711DE72963648921AB05D6B5 /* MemoWatch */,
 				3E20B1D763459E06138ADFA5 /* MemoWatchWidgets */,
 				01A8309717E836C2E8FE65DA /* MemoiPhone */,
@@ -423,6 +506,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		12D4EADFEAC170BA0562B9F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB0EBC7AF5ACCD9E2DCB6045 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AB0FC86CB0AA7B5C7FADB5B9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -435,6 +526,24 @@
 
 /* Begin PBXShellScriptBuildPhase section */
 		38A225E0B23169722FD3C126 /* Clean Extended Attributes */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Clean Extended Attributes";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "xattr -cr \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.appex\" 2>/dev/null || true\n";
+		};
+		67811F08ACF10556D3ABA695 /* Clean Extended Attributes */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -491,6 +600,17 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		80FD12475F0F36DB40F0B143 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00EC0204D41715A2ED913DBA /* Note.swift in Sources */,
+				F18C39CEB99015EC8E89331B /* NoteImportService.swift in Sources */,
+				B7E5CE3B750D9387755CF7E3 /* NoteStorage.swift in Sources */,
+				87D067FB888A498B7F922300 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9AE04C9878993031A3BA32AF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -505,6 +625,7 @@
 				E6E1FC23DF1C1109BEA839F9 /* MemoApp_iPhone.swift in Sources */,
 				CDA7FBB0361CA06BA2467ECD /* Note.swift in Sources */,
 				5707D2AA4718E7A354207CD9 /* NoteEditorView.swift in Sources */,
+				77508C56A60352006C2813CC /* NoteImportService.swift in Sources */,
 				51EA62F6AE2689C28A0D327D /* NoteListView.swift in Sources */,
 				5A4F2AA900F47A4FCAAC8905 /* NoteStorage.swift in Sources */,
 				C63E7030C7272BF79A9A601D /* WatchSyncManager.swift in Sources */,
@@ -524,6 +645,7 @@
 				B38639BE34A0130AACDBC5F2 /* MarkdownTextView.swift in Sources */,
 				1B219AFB7E5FC60B5B41A651 /* MemoApp_Watch.swift in Sources */,
 				FE261793ECF369BE576B7E17 /* Note.swift in Sources */,
+				26D2447DCE1963EB2CD381A9 /* NoteImportService.swift in Sources */,
 				B567A95607C60BA41FBB9F5C /* NoteListView.swift in Sources */,
 				81BF8F2079D2223C1095CEF8 /* NoteReaderView.swift in Sources */,
 				2C1F2597E83F510DD28D6745 /* NoteStorage.swift in Sources */,
@@ -545,6 +667,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A3E6E07A3FD1F1FC83F1B244 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 933AA896A26A6B348E656FA1 /* MemoShareExtension */;
+			targetProxy = CB7B3FB4165DBDFF637AA5D1 /* PBXContainerItemProxy */;
+		};
 		CD3F2400BFDD3739502C4205 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 711DE72963648921AB05D6B5 /* MemoWatch */;
@@ -762,6 +889,26 @@
 			};
 			name = Debug;
 		};
+		68B754038A15E0A886B7EA33 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/MemoShareExtension.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TQB9352FVA;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.memo.iphone.share;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		692DB7F65A13A1FAA3D15DCF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -803,6 +950,26 @@
 			};
 			name = Debug;
 		};
+		D1BA2A139E1821314A3B3DC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/MemoShareExtension.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TQB9352FVA;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.memo.iphone.share;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -820,6 +987,15 @@
 			buildConfigurations = (
 				C59E156D2879F6604E23CF57 /* Debug */,
 				304BB6C1E1A120D1F9441118 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A91F3DB8B5FBB2DCFC8ACC6D /* Build configuration list for PBXNativeTarget "MemoShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				68B754038A15E0A886B7EA33 /* Debug */,
+				D1BA2A139E1821314A3B3DC6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

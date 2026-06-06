@@ -8,6 +8,9 @@ struct MemoApp_iPhone: App {
         WindowGroup {
             ContentView()
                 .environmentObject(noteStore)
+                .onOpenURL { url in
+                    noteStore.handleOpenURL(url)
+                }
         }
     }
 }

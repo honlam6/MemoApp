@@ -65,7 +65,7 @@ struct LaTeXBlockView: View {
         case .iPhone:
             return fontSize
         case .watch:
-            return min(max(fontSize + 1, 8), 13)
+            return min(max(fontSize + 1, 8), 16)
         }
     }
 
@@ -308,12 +308,14 @@ private enum LaTeXFormulaPreprocessor {
     private static let blockCache: NSCache<NSString, CachedPreparedFormula> = {
         let cache = NSCache<NSString, CachedPreparedFormula>()
         cache.countLimit = 256
+        cache.totalCostLimit = 1 * 1024 * 1024
         return cache
     }()
 
     private static let inlineCache: NSCache<NSString, CachedPreparedFormula> = {
         let cache = NSCache<NSString, CachedPreparedFormula>()
         cache.countLimit = 512
+        cache.totalCostLimit = 1 * 1024 * 1024
         return cache
     }()
 
@@ -331,7 +333,7 @@ private enum LaTeXFormulaPreprocessor {
         } else {
             prepared = PreparedFormula(math: normalizeUnicodeSubscripts(trimmed), annotation: nil, shouldFallbackToPlainText: shouldFallback)
         }
-        blockCache.setObject(CachedPreparedFormula(prepared), forKey: key)
+        blockCache.setObject(CachedPreparedFormula(prepared), forKey: key, cost: formula.utf8.count)
         return prepared
     }
 
@@ -343,7 +345,7 @@ private enum LaTeXFormulaPreprocessor {
 
         let sanitized = normalizeUnicodeSubscripts(sanitizeFormula(formula))
         let prepared = PreparedFormula(math: sanitized, annotation: nil, shouldFallbackToPlainText: shouldFallbackToPlainText(sanitized))
-        inlineCache.setObject(CachedPreparedFormula(prepared), forKey: key)
+        inlineCache.setObject(CachedPreparedFormula(prepared), forKey: key, cost: formula.utf8.count)
         return prepared
     }
 
@@ -413,38 +415,40 @@ private enum LaTeXFormulaPreprocessor {
     }
 }
 
-private struct InlineFlowLayout: Layout {
+struct InlineFlowLayout: Layout {
     let spacing: CGFloat
     let lineSpacing: CGFloat
 
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    struct CacheData {
+        var rows: [RowData]
+    }
+
+    func makeCache(subviews: Subviews) -> CacheData? {
+        nil
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout CacheData?) -> CGSize {
         let maxWidth = proposal.width ?? .greatestFiniteMagnitude
         let rows = arrange(subviews: subviews, maxWidth: maxWidth)
+        cache = CacheData(rows: rows)
         let width = rows.map(\.width).max() ?? 0
-        let height = rows.reduce(CGFloat.zero) { total, row in
-            total + row.height
-        } + CGFloat(max(rows.count - 1, 0)) * lineSpacing
+        let height = rows.reduce(CGFloat.zero) { $0 + $1.height } + CGFloat(max(rows.count - 1, 0)) * lineSpacing
         return CGSize(width: min(width, maxWidth), height: height)
     }
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let rows = arrange(subviews: subviews, maxWidth: bounds.width)
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout CacheData?) {
+        let maxWidth = bounds.width
+        let rows = arrange(subviews: subviews, maxWidth: maxWidth)
+        cache = CacheData(rows: rows)
         var y = bounds.minY
 
         for row in rows {
             var x = bounds.minX
             for item in row.items {
                 let itemY = y + (row.height - item.size.height) / 2
-                let clampedX = min(x, bounds.maxX - item.size.width)
-                let clampedY = min(itemY, bounds.maxY - item.size.height)
-                let placementX = max(bounds.minX, clampedX)
-                let placementY = max(bounds.minY, clampedY)
-
-                let widthProposal = item.isFlexible ? item.proposedWidth : item.proposedWidth
-                let heightProposal: CGFloat? = item.isFlexible ? nil : item.size.height
                 subviews[item.index].place(
-                    at: CGPoint(x: placementX, y: placementY),
-                    proposal: ProposedViewSize(width: widthProposal, height: heightProposal)
+                    at: CGPoint(x: x, y: itemY),
+                    proposal: ProposedViewSize(width: item.size.width, height: item.size.height)
                 )
                 x += item.size.width + spacing
             }
@@ -452,28 +456,21 @@ private struct InlineFlowLayout: Layout {
         }
     }
 
-    private func arrange(subviews: Subviews, maxWidth: CGFloat) -> [Row] {
-        var rows: [Row] = []
-        var current = Row()
+    private func arrange(subviews: Subviews, maxWidth: CGFloat) -> [RowData] {
+        var rows: [RowData] = []
+        var current = RowData()
 
         for index in subviews.indices {
-            let intrinsicSize = subviews[index].sizeThatFits(.unspecified)
-            let constrainedSize = subviews[index].sizeThatFits(
-                ProposedViewSize(width: maxWidth, height: nil)
-            )
-            let isFlexible = constrainedSize.height > intrinsicSize.height + 1
+            let itemSize = subviews[index].sizeThatFits(ProposedViewSize(width: maxWidth, height: nil))
 
-            if isFlexible {
-                arrangeFlexible(
-                    index: index, subviews: subviews,
-                    intrinsicSize: intrinsicSize, constrainedSize: constrainedSize,
-                    maxWidth: maxWidth, current: &current, rows: &rows
-                )
+            if current.items.isEmpty {
+                current.append(ItemData(index: index, size: itemSize), spacing: spacing)
+            } else if current.width + spacing + itemSize.width <= maxWidth {
+                current.append(ItemData(index: index, size: itemSize), spacing: spacing)
             } else {
-                arrangeRigid(
-                    index: index, intrinsicSize: intrinsicSize,
-                    maxWidth: maxWidth, current: &current, rows: &rows
-                )
+                rows.append(current)
+                current = RowData()
+                current.append(ItemData(index: index, size: itemSize), spacing: spacing)
             }
         }
 
@@ -483,108 +480,21 @@ private struct InlineFlowLayout: Layout {
         return rows
     }
 
-    private func arrangeFlexible(
-        index: Int,
-        subviews: Subviews,
-        intrinsicSize: CGSize,
-        constrainedSize: CGSize,
-        maxWidth: CGFloat,
-        current: inout Row,
-        rows: inout [Row]
-    ) {
-        if current.items.isEmpty {
-            let measureWidth = intrinsicSize.width <= maxWidth ? intrinsicSize.width : maxWidth
-            let measured = intrinsicSize.width <= maxWidth
-                ? intrinsicSize
-                : subviews[index].sizeThatFits(ProposedViewSize(width: maxWidth, height: nil))
-            current.append(
-                Item(index: index, size: measured, proposedWidth: measureWidth, isFlexible: true),
-                spacing: spacing
-            )
-        } else {
-            let remainingWidth = maxWidth - current.width - spacing
-            if remainingWidth >= 20 {
-                let constrained = subviews[index].sizeThatFits(
-                    ProposedViewSize(width: remainingWidth, height: nil)
-                )
-                if constrained.width <= remainingWidth {
-                    current.append(
-                        Item(index: index, size: constrained, proposedWidth: remainingWidth, isFlexible: true),
-                        spacing: spacing
-                    )
-                } else {
-                    rows.append(current)
-                    current = Row()
-                    let measured = subviews[index].sizeThatFits(
-                        ProposedViewSize(width: maxWidth, height: nil)
-                    )
-                    current.append(
-                        Item(index: index, size: measured, proposedWidth: maxWidth, isFlexible: true),
-                        spacing: spacing
-                    )
-                }
-            } else {
-                rows.append(current)
-                current = Row()
-                let measured = subviews[index].sizeThatFits(
-                    ProposedViewSize(width: maxWidth, height: nil)
-                )
-                current.append(
-                    Item(index: index, size: measured, proposedWidth: maxWidth, isFlexible: true),
-                    spacing: spacing
-                )
-            }
-        }
-    }
-
-    private func arrangeRigid(
-        index: Int,
-        intrinsicSize: CGSize,
-        maxWidth: CGFloat,
-        current: inout Row,
-        rows: inout [Row]
-    ) {
-        if current.items.isEmpty {
-            let proposedWidth = min(intrinsicSize.width, maxWidth)
-            current.append(
-                Item(index: index, size: intrinsicSize, proposedWidth: proposedWidth, isFlexible: false),
-                spacing: spacing
-            )
-        } else {
-            let nextWidth = current.width + spacing + intrinsicSize.width
-            if nextWidth <= maxWidth {
-                current.append(
-                    Item(index: index, size: intrinsicSize, proposedWidth: intrinsicSize.width, isFlexible: false),
-                    spacing: spacing
-                )
-            } else {
-                rows.append(current)
-                current = Row()
-                let proposedWidth = min(intrinsicSize.width, maxWidth)
-                current.append(
-                    Item(index: index, size: intrinsicSize, proposedWidth: proposedWidth, isFlexible: false),
-                    spacing: spacing
-                )
-            }
-        }
-    }
-
-    private struct Item {
+    struct ItemData {
         let index: Int
         let size: CGSize
-        let proposedWidth: CGFloat
-        let isFlexible: Bool
     }
 
-    private struct Row {
-        var items: [Item] = []
+    struct RowData {
+        var items: [ItemData] = []
         var width: CGFloat = 0
         var height: CGFloat = 0
 
-        mutating func append(_ item: Item, spacing: CGFloat) {
+        mutating func append(_ item: ItemData, spacing: CGFloat) {
             width += items.isEmpty ? item.size.width : spacing + item.size.width
             height = max(height, item.size.height)
             items.append(item)
         }
     }
 }
+

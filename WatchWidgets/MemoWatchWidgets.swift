@@ -26,20 +26,29 @@ struct MemoWidgetProvider: TimelineProvider {
     }
 }
 
-struct MemoAccessoryCircularView: View {
+struct MemoWatchWidgetEntryView: View {
     let entry: MemoWidgetEntry
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        switch family {
+        case .accessoryCircular:
+            AccessoryCircularView(count: entry.noteCount)
+        default:
+            AccessoryCircularView(count: entry.noteCount)
+        }
+    }
+}
+
+private struct AccessoryCircularView: View {
+    let count: Int
 
     var body: some View {
         ZStack {
             AccessoryWidgetBackground()
-            VStack(spacing: 2) {
-                Image(systemName: "note.text")
-                    .font(.system(size: 14, weight: .semibold))
-                Text("\(min(entry.noteCount, 99))")
-                    .font(.system(size: 14, weight: .bold))
-            }
+            Text("\(count)")
+                .font(.system(size: 14, weight: .bold))
         }
-        .widgetURL(URL(string: "memoapp-watch://notes"))
     }
 }
 
@@ -48,10 +57,10 @@ struct MemoWatchWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: MemoWidgetProvider()) { entry in
-            MemoAccessoryCircularView(entry: entry)
+            MemoWatchWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("打开备忘录")
-        .description("快速打开手表备忘录。")
+        .configurationDisplayName("备忘录")
+        .description("显示备忘录数量")
         .supportedFamilies([.accessoryCircular])
     }
 }

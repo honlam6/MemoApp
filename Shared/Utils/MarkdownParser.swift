@@ -5,6 +5,7 @@ enum MarkdownParser {
     private static let cache: NSCache<NSString, CachedBlocks> = {
         let cache = NSCache<NSString, CachedBlocks>()
         cache.countLimit = 64
+        cache.totalCostLimit = 2 * 1024 * 1024 // 2 MB
         return cache
     }()
 
@@ -18,6 +19,17 @@ enum MarkdownParser {
         case horizontalRule
         case codeBlock(language: String, code: String)
         case mathBlock(formula: String)
+    }
+
+    /// 在后台队列解析 markdown，返回时已在调用 actor 上
+    static func parseBackground(_ markdown: String) async -> [Block] {
+        let key = markdown as NSString
+        if let cached = cache.object(forKey: key) {
+            return cached.blocks
+        }
+        return await Task.detached(priority: .userInitiated) {
+            parse(markdown)
+        }.value
     }
 
     static func parse(_ markdown: String) -> [Block] {
@@ -128,20 +140,29 @@ enum MarkdownParser {
             }
 
             // 普通段落
-            var paraLines: [String] = [trimmed]
+            var paraLines: [(text: String, hardBreak: Bool)] = [(trimmed, false)]
             i += 1
             while i < lines.count {
-                let next = lines[i].trimmingCharacters(in: .whitespaces)
-                if next.isEmpty || next.hasPrefix("#") || next.hasPrefix("- ") || next.hasPrefix("* ") || next.hasPrefix("|") || next.hasPrefix("```") || next == "---" || next.hasPrefix("$$") || next == #"\["# {
+                let raw = lines[i]
+                let next = raw.trimmingCharacters(in: .whitespaces)
+                if next.isEmpty || next.hasPrefix("#") || next.hasPrefix("- ") || next.hasPrefix("* ") || next.hasPrefix("**") || next.hasPrefix("|") || next.hasPrefix("```") || next == "---" || next.hasPrefix("$$") || next == #"\["# {
                     break
                 }
-                paraLines.append(next)
+                let hardBreak = raw.hasSuffix("  ")
+                paraLines.append((next, hardBreak))
                 i += 1
             }
-            blocks.append(.paragraph(text: paraLines.joined(separator: " ")))
+            var paraText = ""
+            for (idx, item) in paraLines.enumerated() {
+                if idx > 0 {
+                    paraText += paraLines[idx - 1].hardBreak ? "  \n" : " "
+                }
+                paraText += item.text
+            }
+            blocks.append(.paragraph(text: paraText))
         }
 
-        cache.setObject(CachedBlocks(blocks), forKey: key)
+        cache.setObject(CachedBlocks(blocks), forKey: key, cost: markdown.utf8.count)
         return blocks
     }
 
