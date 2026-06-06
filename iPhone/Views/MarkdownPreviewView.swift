@@ -4,24 +4,38 @@ import SwiftUI
 struct MarkdownPreviewView: View {
     let content: String
     @State private var blocks: [MarkdownParser.Block] = []
+    @State private var isLoading = true
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 6) {
-                ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
-                    iPhoneBlockView(block: block)
+        Group {
+            if isLoading && blocks.isEmpty {
+                VStack {
+                    Spacer()
+                    ProgressView("正在渲染预览…")
+                    Spacer()
+                }
+            } else {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 6) {
+                        ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
+                            iPhoneBlockView(block: block)
+                        }
+                    }
+                    .padding()
                 }
             }
-            .padding()
         }
         .onAppear {
             Task {
                 blocks = await MarkdownParser.parseBackground(content)
+                isLoading = false
             }
         }
         .onChange(of: content) { _, newValue in
+            isLoading = true
             Task {
                 blocks = await MarkdownParser.parseBackground(newValue)
+                isLoading = false
             }
         }
     }

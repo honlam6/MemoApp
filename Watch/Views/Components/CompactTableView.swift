@@ -14,9 +14,9 @@ struct CompactTableView: View {
                     .fill(.secondary.opacity(0.3))
                     .frame(height: 0.5)
 
-                ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                ForEach(Array(rows.enumerated()), id: \.offset) { index, row in
                     TableRowView(cells: row, fontSize: fontSize, isHeader: false)
-                    if row != rows.last {
+                    if index < rows.count - 1 {
                         Rectangle()
                             .fill(.secondary.opacity(0.15))
                             .frame(height: 0.5)

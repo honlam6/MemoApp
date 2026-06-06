@@ -5,6 +5,7 @@ struct NoteReaderView: View {
     @State private var blocks: [MarkdownParser.Block] = []
     @State private var fontSize: CGFloat = NoteReaderView.initialFontSize
     @State private var prefetchedBlockCount = 0
+    @State private var prefetchTask: Task<Void, Never>?
 
     private let initialPrefetchCount = 10
     private let prefetchBatchSize = 8
@@ -67,6 +68,7 @@ struct NoteReaderView: View {
     }
 
     private func refreshBlocks() {
+        prefetchTask?.cancel()
         Task {
             let parsed = await MarkdownParser.parseBackground(note.content)
             blocks = parsed
@@ -88,9 +90,10 @@ struct NoteReaderView: View {
     private func startPrefetchingRemainingBlocks(expectedCount: Int) {
         guard prefetchedBlockCount < expectedCount else { return }
 
-        Task {
-            while true {
+        prefetchTask = Task {
+            while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: prefetchIntervalNanoseconds)
+                guard !Task.isCancelled else { break }
                 let shouldContinue = await MainActor.run { () -> Bool in
                     guard blocks.count == expectedCount, prefetchedBlockCount < expectedCount else {
                         return false

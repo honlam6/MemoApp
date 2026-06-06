@@ -35,11 +35,15 @@ class NoteStore: ObservableObject {
         }
     }
 
-    func addNote(from content: String) {
+    @discardableResult
+    func addNote(from content: String) -> String? {
         do {
             notes = try NoteImportService.importMarkdown(content, into: notes)
+            return nil
         } catch {
-            print("[Import][iPhone] Failed to import note: \(error)")
+            let message = "导入失败: \(error.localizedDescription)"
+            print("[Import][iPhone] \(message)")
+            return message
         }
     }
 
@@ -48,11 +52,12 @@ class NoteStore: ObservableObject {
     }
 
     func updateNote(_ note: Note, content: String) {
-        if let idx = notes.firstIndex(where: { $0.id == note.id }) {
-            notes[idx].content = content
-            notes[idx].title = Note.titleFromContent(content)
-            notes[idx].lastModified = Date()
-        }
+        guard let idx = notes.firstIndex(where: { $0.id == note.id }) else { return }
+        var updated = notes[idx]
+        updated.content = content
+        updated.title = Note.titleFromContent(content)
+        updated.lastModified = Date()
+        notes[idx] = updated  // 单次赋值，只触发一次 didSet
     }
 
     func handleOpenURL(_ url: URL) {
@@ -73,6 +78,7 @@ class NoteStore: ObservableObject {
 
 struct NoteListView: View {
     @EnvironmentObject var store: NoteStore
+    @State private var noteToDelete: Note?
 
     var body: some View {
         Group {
@@ -100,11 +106,29 @@ struct NoteListView: View {
                         }
                     }
                     .onDelete { indexSet in
-                        for index in indexSet {
-                            store.deleteNote(store.notes[index])
+                        if let index = indexSet.first {
+                            noteToDelete = store.notes[index]
                         }
                     }
                 }
+            }
+        }
+        .alert("确认删除", isPresented: Binding(
+            get: { noteToDelete != nil },
+            set: { if !$0 { noteToDelete = nil } }
+        )) {
+            Button("删除", role: .destructive) {
+                if let note = noteToDelete {
+                    store.deleteNote(note)
+                    noteToDelete = nil
+                }
+            }
+            Button("取消", role: .cancel) {
+                noteToDelete = nil
+            }
+        } message: {
+            if let note = noteToDelete {
+                Text("确定要删除「\(note.title)」吗？此操作无法撤销。")
             }
         }
     }

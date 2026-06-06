@@ -57,14 +57,12 @@ struct FileImportView: View {
         .navigationBarTitleDisplayMode(.inline)
         .fileImporter(
             isPresented: $showingFilePicker,
-            allowedContentTypes: [UTType(filenameExtension: "md") ?? .plainText],
+            allowedContentTypes: [UTType(filenameExtension: "md") ?? .plainText, .plainText, .text],
             allowsMultipleSelection: true
         ) { result in
             switch result {
             case .success(let urls):
-                for url in urls {
-                    importFile(url)
-                }
+                importFiles(urls)
             case .failure(let error):
                 alertMessage = error.localizedDescription
                 showingAlert = true
@@ -77,20 +75,37 @@ struct FileImportView: View {
         }
     }
 
-    private func importFile(_ url: URL) {
-        guard url.startAccessingSecurityScopedResource() else {
-            alertMessage = "无法访问文件"
-            showingAlert = true
-            return
-        }
-        defer { url.stopAccessingSecurityScopedResource() }
+    private func importFiles(_ urls: [URL]) {
+        var imported = 0
+        var errors: [String] = []
 
-        do {
-            let content = try String(contentsOf: url, encoding: .utf8)
-            store.addNote(from: content)
+        for url in urls {
+            let didAccess = url.startAccessingSecurityScopedResource()
+            defer {
+                if didAccess {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
+
+            do {
+                let content = try String(contentsOf: url, encoding: .utf8)
+                if let error = store.addNote(from: content) {
+                    errors.append("\(url.lastPathComponent): \(error)")
+                } else {
+                    imported += 1
+                }
+            } catch {
+                errors.append("\(url.lastPathComponent): \(error.localizedDescription)")
+            }
+        }
+
+        if imported > 0 && errors.isEmpty {
             dismiss()
-        } catch {
-            alertMessage = "读取文件失败: \(error.localizedDescription)"
+        } else if imported > 0 {
+            alertMessage = "导入 \(imported) 个文件成功，但有 \(errors.count) 个失败:\n" + errors.joined(separator: "\n")
+            showingAlert = true
+        } else {
+            alertMessage = errors.first ?? "导入失败"
             showingAlert = true
         }
     }
@@ -100,6 +115,8 @@ struct ManualInputView: View {
     @EnvironmentObject var store: NoteStore
     @Environment(\.dismiss) private var dismiss
     @State private var content: String = ""
+    @State private var showingAlert = false
+    @State private var alertMessage = ""
 
     var body: some View {
         VStack {
@@ -117,11 +134,20 @@ struct ManualInputView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("保存") {
-                    store.addNote(from: content)
-                    dismiss()
+                    if let error = store.addNote(from: content) {
+                        alertMessage = error
+                        showingAlert = true
+                    } else {
+                        dismiss()
+                    }
                 }
                 .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
+        }
+        .alert("导入失败", isPresented: $showingAlert) {
+            Button("OK") {}
+        } message: {
+            Text(alertMessage)
         }
     }
 }

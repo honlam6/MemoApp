@@ -4,6 +4,7 @@ struct ContentView: View {
     @EnvironmentObject var store: NoteStore
     @State private var showSyncToast = false
     @State private var syncToastMessage = ""
+    @State private var syncToastWorkItem: DispatchWorkItem?
 
     var body: some View {
         NavigationStack {
@@ -14,26 +15,19 @@ struct ContentView: View {
                         ToolbarItem(placement: .topBarTrailing) {
                             HStack(spacing: 16) {
                                 Button {
-                                    let result = WatchSyncManager.shared.sendNotes(store.notes)
-                                    syncToastMessage = result.message
-                                    withAnimation {
-                                        showSyncToast = true
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                        withAnimation {
-                                            showSyncToast = false
-                                        }
-                                    }
+                                    triggerSync()
                                 } label: {
                                     Image(systemName: "arrow.triangle.2.circlepath")
                                         .font(.title3)
                                 }
+                                .accessibilityLabel("同步到 Apple Watch")
                                 NavigationLink {
                                     FileImportView()
                                 } label: {
                                     Image(systemName: "plus.circle.fill")
                                         .font(.title2)
                                 }
+                                .accessibilityLabel("导入笔记")
                             }
                         }
                 }
@@ -50,5 +44,21 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    private func triggerSync() {
+        syncToastWorkItem?.cancel()
+        let result = WatchSyncManager.shared.sendNotes(store.notes)
+        syncToastMessage = result.message
+        withAnimation {
+            showSyncToast = true
+        }
+        let workItem = DispatchWorkItem {
+            withAnimation {
+                showSyncToast = false
+            }
+        }
+        syncToastWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: workItem)
     }
 }

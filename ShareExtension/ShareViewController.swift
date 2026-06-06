@@ -120,7 +120,9 @@ final class ShareViewController: UIViewController {
         completion: @escaping (Result<String, Error>) -> Void
     ) {
         guard let typeIdentifier = preferredTypeIdentifier(for: provider) else {
-            completion(.failure(ShareImportError.unsupportedType))
+            completion(.failure(ShareImportError.unsupportedType(
+                provider.registeredTypeIdentifiers.joined(separator: ", ")
+            )))
             return
         }
 
@@ -139,27 +141,25 @@ final class ShareViewController: UIViewController {
     }
 
     private func preferredTypeIdentifier(for provider: NSItemProvider) -> String? {
+        // 优先匹配明确的文本/Markdown 类型
         let preferred = [
-            UTType.fileURL.identifier,
-            UTType.utf8PlainText.identifier,
-            UTType.plainText.identifier,
             "net.daringfireball.markdown",
             "public.markdown",
+            UTType.utf8PlainText.identifier,
+            UTType.plainText.identifier,
             UTType.text.identifier,
-            UTType.data.identifier
+            UTType.fileURL.identifier,
+            UTType.data.identifier,
+            UTType.content.identifier,
+            "public.item",
         ]
 
         for identifier in preferred where provider.hasItemConformingToTypeIdentifier(identifier) {
             return identifier
         }
 
-        return provider.registeredTypeIdentifiers.first { identifier in
-            guard let type = UTType(identifier) else { return false }
-            return type.conforms(to: .fileURL) ||
-                type.conforms(to: .plainText) ||
-                type.conforms(to: .text) ||
-                type.conforms(to: .data)
-        }
+        // 兜底：任何已注册的类型都尝试加载（微信等 App 可能使用非标准 UTI）
+        return provider.registeredTypeIdentifiers.first
     }
 
     private static func markdownString(from item: NSSecureCoding?) throws -> String {
@@ -179,21 +179,31 @@ final class ShareViewController: UIViewController {
             return try markdownString(from: url as URL)
         }
 
+        // 兜底：尝试将 item 转为 Data 再解码
+        if let data = item as? NSData as Data?, let string = String(data: data, encoding: .utf8) {
+            return string
+        }
+
         throw ShareImportError.unreadableContent
     }
 
     private static func markdownString(from url: URL) throws -> String {
-        guard url.isFileURL else {
-            throw ShareImportError.unsupportedType
-        }
-
-        let didAccess = url.startAccessingSecurityScopedResource()
-        defer {
-            if didAccess {
-                url.stopAccessingSecurityScopedResource()
+        // 文件 URL：安全作用域读取
+        if url.isFileURL {
+            let didAccess = url.startAccessingSecurityScopedResource()
+            defer {
+                if didAccess {
+                    url.stopAccessingSecurityScopedResource()
+                }
             }
+            let data = try Data(contentsOf: url)
+            guard let string = String(data: data, encoding: .utf8) else {
+                throw ShareImportError.invalidEncoding
+            }
+            return string
         }
 
+        // 非文件 URL（如微信分享的临时文件）：直接尝试读取
         let data = try Data(contentsOf: url)
         guard let string = String(data: data, encoding: .utf8) else {
             throw ShareImportError.invalidEncoding
@@ -232,14 +242,14 @@ final class ShareViewController: UIViewController {
 }
 
 private enum ShareImportError: LocalizedError {
-    case unsupportedType
+    case unsupportedType(String)
     case unreadableContent
     case invalidEncoding
 
     var errorDescription: String? {
         switch self {
-        case .unsupportedType:
-            return "当前分享内容不是可读取的 Markdown 文件或文本。"
+        case .unsupportedType(let types):
+            return "当前分享内容不是可读取的 Markdown 文件或文本。\n类型: \(types)"
         case .unreadableContent:
             return "无法读取分享内容。"
         case .invalidEncoding:

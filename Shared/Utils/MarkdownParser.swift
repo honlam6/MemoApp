@@ -117,6 +117,31 @@ enum MarkdownParser {
                 continue
             }
 
+            // 有序列表
+            if isOrderedList(trimmed) {
+                var items: [String] = []
+                while i < lines.count {
+                    let lt = lines[i].trimmingCharacters(in: .whitespaces)
+                    if isOrderedList(lt) {
+                        // 去掉 "1. " 前缀
+                        if let dotIndex = lt.firstIndex(of: ".") {
+                            let afterDot = lt[lt.index(after: dotIndex)...].trimmingCharacters(in: .whitespaces)
+                            items.append(afterDot)
+                        }
+                        i += 1
+                    } else if lt.hasPrefix("  ") && !lt.isEmpty {
+                        if !items.isEmpty {
+                            items[items.count - 1] += " " + lt
+                        }
+                        i += 1
+                    } else {
+                        break
+                    }
+                }
+                blocks.append(.numberedList(items: items))
+                continue
+            }
+
             // 无序列表
             if trimmed.hasPrefix("- ") || trimmed.hasPrefix("* ") || trimmed.hasPrefix("+ ") {
                 var items: [String] = []
@@ -145,7 +170,7 @@ enum MarkdownParser {
             while i < lines.count {
                 let raw = lines[i]
                 let next = raw.trimmingCharacters(in: .whitespaces)
-                if next.isEmpty || next.hasPrefix("#") || next.hasPrefix("- ") || next.hasPrefix("* ") || next.hasPrefix("**") || next.hasPrefix("|") || next.hasPrefix("```") || next == "---" || next.hasPrefix("$$") || next == #"\["# {
+                if next.isEmpty || next.hasPrefix("# ") || next.hasPrefix("- ") || next.hasPrefix("* ") || next.hasPrefix("+ ") || next.hasPrefix("|") || next.hasPrefix("```") || next == "---" || next == "***" || next == "___" || next.hasPrefix("$$") || next == #"\["# || next.hasPrefix("> ") || isOrderedList(next) {
                     break
                 }
                 let hardBreak = raw.hasSuffix("  ")
@@ -173,13 +198,24 @@ enum MarkdownParser {
         for ch in line {
             if ch == "#" { level += 1 } else { break }
         }
-        if level > 0 && level <= 6 && line.count > level {
-            let text = String(line.dropFirst(level)).trimmingCharacters(in: .whitespaces)
-            // 去除 HTML 锚点
-            let cleanText = text.replacingOccurrences(of: #"<a id="[^"]*"></a>"#, with: "", options: .regularExpression)
-            return .heading(level: level, text: cleanText)
+        // CommonMark 规范：# 后面必须有空格
+        guard level > 0, level <= 6, line.count > level,
+              line[line.index(line.startIndex, offsetBy: level)] == " " else {
+            return nil
         }
-        return nil
+        let text = String(line.dropFirst(level)).trimmingCharacters(in: .whitespaces)
+        let cleanText = text.replacingOccurrences(of: #"<a id="[^"]*"></a>"#, with: "", options: .regularExpression)
+        return .heading(level: level, text: cleanText)
+    }
+
+    private static func isOrderedList(_ line: String) -> Bool {
+        guard let dotIndex = line.firstIndex(of: "."),
+              dotIndex > line.startIndex,
+              line.index(after: dotIndex) < line.endIndex else {
+            return false
+        }
+        let prefix = line[line.startIndex..<dotIndex]
+        return prefix.allSatisfy(\.isNumber) && line[line.index(after: dotIndex)] == " "
     }
 
     private static func parseDollarMathBlock(lines: [String], startIndex: Int) -> (block: Block, nextIndex: Int)? {

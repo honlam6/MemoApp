@@ -8,6 +8,7 @@ struct NoteEditorView: View {
     @State private var showPreview = false
     @State private var showSyncToast = false
     @State private var syncToastMessage = ""
+    @State private var syncToastWorkItem: DispatchWorkItem?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -32,23 +33,15 @@ struct NoteEditorView: View {
                 } label: {
                     Image(systemName: showPreview ? "pencil" : "eye")
                 }
+                .accessibilityLabel(showPreview ? "编辑" : "预览")
             }
             ToolbarItem(placement: .topBarTrailing) {
-                HStack(spacing: 12) {
-                    if hasChanges {
-                        Button("保存") {
-                            store.updateNote(note, content: content)
-                            hasChanges = false
-                            triggerSync()
-                        }
-                        .bold()
-                    }
-                    Button {
-                        triggerSync()
-                    } label: {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                    }
+                Button {
+                    triggerSync()
+                } label: {
+                    Image(systemName: "arrow.triangle.2.circlepath")
                 }
+                .accessibilityLabel("同步到 Apple Watch")
             }
         }
         .overlay(alignment: .bottom) {
@@ -74,15 +67,18 @@ struct NoteEditorView: View {
     }
 
     private func triggerSync() {
+        syncToastWorkItem?.cancel()
         let result = WatchSyncManager.shared.sendNotes(store.notes)
         syncToastMessage = result.message
         withAnimation {
             showSyncToast = true
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        let workItem = DispatchWorkItem {
             withAnimation {
                 showSyncToast = false
             }
         }
+        syncToastWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: workItem)
     }
 }

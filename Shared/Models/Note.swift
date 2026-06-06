@@ -77,7 +77,16 @@ struct Note: Codable, Identifiable, Equatable {
     }
 
     private static func isStandaloneInlineMath(_ line: String) -> Bool {
-        (line.hasPrefix("$") && line.hasSuffix("$") && !line.hasPrefix("$$") && line.count > 2) ||
-        (line.hasPrefix(#"\("#) && line.hasSuffix(#"\)"#) && line.count > 4)
+        // \(...\) 格式
+        if line.hasPrefix(#"\("#) && line.hasSuffix(#"\)"#) && line.count > 4 {
+            return true
+        }
+        // $...$ 格式：确保只有一个开头 $ 和一个结尾 $，中间无其他 $
+        guard line.hasPrefix("$"), line.hasSuffix("$"), !line.hasPrefix("$$"), line.count > 2 else {
+            return false
+        }
+        let inner = String(line.dropFirst().dropLast())
+        // 内部不应再有未转义的 $，否则不是独立行内公式
+        return !inner.contains("$")
     }
 }
